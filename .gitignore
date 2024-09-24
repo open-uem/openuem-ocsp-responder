@@ -1,0 +1,7 @@
+*.key
+*.pem
+*.cer
+*.pfx
+certificates
+PIDFILE
+.vscode
