@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"syscall"
 
@@ -61,24 +62,33 @@ func startOCSPResponder(cCtx *cli.Context) error {
 	}
 	defer model.Close()
 
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
 	log.Printf("📜  reading CA certificate")
-	caCert, err := openuem_utils.ReadPEMCertificate(cCtx.String("cacert"))
+	caCertPath := filepath.Join(cwd, cCtx.String("cacert"))
+	caCert, err := openuem_utils.ReadPEMCertificate(caCertPath)
 	if err != nil {
 		return err
 	}
 
 	log.Printf("📜  reading OCSP responder certificate")
-	ocspCert, err := openuem_utils.ReadPEMCertificate(cCtx.String("cert"))
+	ocspCertPath := filepath.Join(cwd, cCtx.String("cert"))
+	ocspCert, err := openuem_utils.ReadPEMCertificate(ocspCertPath)
 	if err != nil {
 		return err
 	}
 
 	log.Printf("🔑  reading OCSP responder key")
-	ocspKey, err := openuem_utils.ReadPEMPrivateKey(cCtx.String("key"))
+	ocspKeyPath := filepath.Join(cwd, cCtx.String("key"))
+	ocspKey, err := openuem_utils.ReadPEMPrivateKey(ocspKeyPath)
 	if err != nil {
 		return err
 	}
 
+	log.Printf("🌐  launching server")
 	go func() {
 		ws := server.New(model, ":8000", caCert, ocspCert, ocspKey)
 		if err := ws.Serve(); err != http.ErrServerClosed {
@@ -87,6 +97,7 @@ func startOCSPResponder(cCtx *cli.Context) error {
 		defer ws.Close()
 	}()
 
+	log.Printf("🆔  writing PIDFILE")
 	// Save pid to PIDFILE
 	if err := os.WriteFile("PIDFILE", []byte(strconv.Itoa(os.Getpid())), 0666); err != nil {
 		return err

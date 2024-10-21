@@ -2,6 +2,8 @@
 *.pem
 *.cer
 *.pfx
+*.exe
 certificates
+logs
 PIDFILE
 .vscode
