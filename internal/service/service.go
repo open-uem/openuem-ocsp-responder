@@ -1,43 +1,39 @@
 package main
 
 import (
-	"encoding/binary"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
-	"unicode/utf16"
-	"unicode/utf8"
 
-	"github.com/danieljoos/wincred"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
-	"github.com/doncicuto/openuem-ocsp-responder/internal/service/logger"
 	"github.com/doncicuto/openuem_utils"
-	"golang.org/x/sys/windows/registry"
 	"golang.org/x/sys/windows/svc"
 )
 
-type OpenUEMService struct {
-	Logger *logger.OpenUEMLogger
+type OCSPResponderService struct {
+	Model     *models.Model
+	WebServer *server.WebServer
+	Logger    *openuem_utils.OpenUEMLogger
 }
 
-func New(l *logger.OpenUEMLogger) *OpenUEMService {
-	return &OpenUEMService{
-		Logger: l,
+func NewOCSPResponder() *OCSPResponderService {
+	return &OCSPResponderService{
+		Logger: openuem_utils.NewLogger("openuem-ocsp-responder.txt"),
 	}
 }
 
-func (s *OpenUEMService) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (ssec bool, errno uint32) {
+func (r *OCSPResponderService) Start() {
 	var err error
-	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
-	changes <- svc.Status{State: svc.StartPending}
-	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted}
 
 	// Get new OCSP Responder
-	dbUrl := createDatabaseURL()
+	dbUrl, err := openuem_utils.CreatePostgresDatabaseURL()
+	if err != nil {
+		log.Printf("[ERROR]: %v\n", err)
+		return
+	}
+
 	model, err := models.New(dbUrl)
 	if err != nil {
 		log.Println("[ERROR]: could not open database connection")
@@ -82,98 +78,24 @@ func (s *OpenUEMService) Execute(args []string, r <-chan svc.ChangeRequest, chan
 	}()
 
 	log.Println("[INFO]: OCSP responder is running")
+}
 
-	// service control manager
-loop:
-	for {
-		select {
-		case c := <-r:
-			switch c.Cmd {
-			case svc.Interrogate:
-				changes <- c.CurrentStatus
-				time.Sleep(100 * time.Millisecond)
-				changes <- c.CurrentStatus
-			case svc.Stop, svc.Shutdown:
-				log.Println("[INFO]: service has received the stop or shutdown command")
-				s.Logger.Close()
-				ws.Close()
-				model.Close()
-				break loop
-			default:
-				log.Println("[WARN]: unexpected control request")
-				return true, 1
-			}
-		}
-	}
-	changes <- svc.Status{State: svc.StopPending}
-	return true, 0
+func (r *OCSPResponderService) Stop() {
+	r.Logger.Close()
+	r.WebServer.Close()
+	r.Model.Close()
 }
 
 func main() {
-	// Instantiate logger
-	l := logger.New()
 
-	// Instantiate service
-	s := New(l)
+	r := NewOCSPResponder()
+	s := openuem_utils.NewOpenUEMWindowsService()
+	s.ServiceStart = r.Start
+	s.ServiceStop = r.Stop
 
 	// Run service
 	err := svc.Run("openuem-ocsp-responder", s)
 	if err != nil {
 		log.Printf("[ERROR]: could not run service: %v", err)
 	}
-}
-
-func createDatabaseURL() string {
-	var err error
-	// Create DATABASE_URL env variable
-	k, err := registry.OpenKey(registry.LOCAL_MACHINE, `SOFTWARE\OpenUEM\Server`, registry.QUERY_VALUE)
-	if err != nil {
-		log.Println("[ERROR]: could not open registry to search OpenUEM Server entries")
-		return ""
-	}
-	defer k.Close()
-
-	user, _, err := k.GetStringValue("PostgresUser")
-	if err != nil {
-		log.Println("[ERROR]: could not read PostgresUser from registry")
-		return ""
-	}
-
-	host, _, err := k.GetStringValue("PostgresHost")
-	if err != nil {
-		log.Println("[ERROR]: could not read PostgresHost from registry")
-		return ""
-	}
-
-	port, _, err := k.GetStringValue("PostgresPort")
-	if err != nil {
-		log.Println("[ERROR]: could not read PostgresPort from registry")
-		return ""
-	}
-
-	database, _, err := k.GetStringValue("PostgresDatabase")
-	if err != nil {
-		log.Println("[ERROR]: could not read PostgresDatabase from registry")
-		return ""
-	}
-
-	pass, err := wincred.GetGenericCredential(host + ":" + port)
-	if err != nil {
-		log.Println("[ERROR]: could not read password from Windows Credential Manager")
-		return ""
-	}
-
-	decodedPass := UTF16BytesToString(pass.CredentialBlob, binary.LittleEndian)
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, decodedPass, host, port, database)
-}
-
-func UTF16BytesToString(b []byte, o binary.ByteOrder) string {
-	utf := make([]uint16, (len(b)+(2-1))/2)
-	for i := 0; i+(2-1) < len(b); i += 2 {
-		utf[i/2] = o.Uint16(b[i:])
-	}
-	if len(b)/2 < len(utf) {
-		utf[len(utf)-1] = utf8.RuneError
-	}
-	return string(utf16.Decode(utf))
 }

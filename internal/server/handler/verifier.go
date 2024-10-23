@@ -141,6 +141,7 @@ func verifyIssuer(caCert *x509.Certificate, req *ocsp.Request) error {
 	h := req.HashAlgorithm.New()
 	h.Write(caCert.RawSubject)
 	if bytes.Compare(h.Sum(nil), req.IssuerNameHash) != 0 {
+		log.Println("[INFO]: issuer name does not match")
 		return errors.New("issuer name does not match")
 	}
 	h.Reset()
@@ -149,10 +150,12 @@ func verifyIssuer(caCert *x509.Certificate, req *ocsp.Request) error {
 		PublicKey asn1.BitString
 	}
 	if _, err := asn1.Unmarshal(caCert.RawSubjectPublicKeyInfo, &publicKeyInfo); err != nil {
+		log.Println("[INFO]: cannot unmarshall caCert.RawSubjectPublicKeyInfo")
 		return err
 	}
 	h.Write(publicKeyInfo.PublicKey.RightAlign())
 	if bytes.Compare(h.Sum(nil), req.IssuerKeyHash) != 0 {
+		log.Println("[INFO]: issuer key hash does not match")
 		return errors.New("issuer key hash does not match")
 	}
 	return nil
