@@ -5,17 +5,22 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/doncicuto/openuem_utils"
+	"github.com/go-co-op/gocron/v2"
 	"golang.org/x/sys/windows/svc"
 )
 
 type OCSPResponderService struct {
-	Model     *models.Model
-	WebServer *server.WebServer
-	Logger    *openuem_utils.OpenUEMLogger
+	Model         *models.Model
+	WebServer     *server.WebServer
+	Logger        *openuem_utils.OpenUEMLogger
+	DBConnectJob  gocron.Job
+	TaskScheduler gocron.Scheduler
+	DBUrl         string
 }
 
 func NewOCSPResponder() *OCSPResponderService {
@@ -28,15 +33,24 @@ func (r *OCSPResponderService) Start() {
 	var err error
 
 	// Get new OCSP Responder
-	dbUrl, err := openuem_utils.CreatePostgresDatabaseURL()
+	r.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
 	if err != nil {
 		log.Printf("[ERROR]: %v\n", err)
 		return
 	}
 
-	model, err := models.New(dbUrl)
+	// Start Task Scheduler
+	r.TaskScheduler, err = gocron.NewScheduler()
 	if err != nil {
-		log.Println("[ERROR]: could not open database connection")
+		log.Printf("[ERROR]: could not create task scheduler, reason: %s", err.Error())
+		return
+	}
+	r.TaskScheduler.Start()
+	log.Println("[INFO]: task scheduler has been started")
+
+	// Start a job to try to connect with the database
+	if err := r.startDBConnectJob(); err != nil {
+		log.Printf("[ERROR]: could not start DB connect job, reason: %s", err.Error())
 		return
 	}
 
@@ -69,7 +83,7 @@ func (r *OCSPResponderService) Start() {
 
 	// TODO may we set the port from registry key and avoid harcoding it?
 	log.Println("[INFO]: launching server")
-	ws := server.New(model, ":8000", caCert, ocspCert, ocspKey)
+	ws := server.New(r.Model, ":8000", caCert, ocspCert, ocspKey)
 
 	go func() {
 		if err := ws.Serve(); err != http.ErrServerClosed {
@@ -84,6 +98,39 @@ func (r *OCSPResponderService) Stop() {
 	r.Logger.Close()
 	r.WebServer.Close()
 	r.Model.Close()
+	if err := r.TaskScheduler.Shutdown(); err != nil {
+		log.Printf("[ERROR]: could not stop the task scheduler, reason: %s", err.Error())
+	}
+}
+
+func (r *OCSPResponderService) startDBConnectJob() error {
+	var err error
+
+	// Create task for running the agent
+	r.DBConnectJob, err = r.TaskScheduler.NewJob(
+		gocron.DurationJob(
+			time.Duration(time.Duration(2*time.Minute)),
+		),
+		gocron.NewTask(
+			func() {
+				r.Model, err = models.New(r.DBUrl)
+				if err != nil {
+					return
+				}
+				log.Println("[INFO] ... connection established with database")
+
+				if err := r.TaskScheduler.RemoveJob(r.DBConnectJob.ID()); err != nil {
+					return
+				}
+			},
+		),
+	)
+	if err != nil {
+		log.Fatalf("[FATAL]: could not start the DB connect job: %v", err)
+		return err
+	}
+	log.Printf("[INFO]: new DB connect job has been scheduled every %d minutes", 2)
+	return nil
 }
 
 func main() {
