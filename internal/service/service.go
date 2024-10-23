@@ -95,16 +95,23 @@ func (r *OCSPResponderService) Start() {
 }
 
 func (r *OCSPResponderService) Stop() {
-	r.Logger.Close()
-	r.WebServer.Close()
 	r.Model.Close()
 	if err := r.TaskScheduler.Shutdown(); err != nil {
 		log.Printf("[ERROR]: could not stop the task scheduler, reason: %s", err.Error())
 	}
+	r.Logger.Close()
+	r.WebServer.Close()
 }
 
 func (r *OCSPResponderService) startDBConnectJob() error {
 	var err error
+
+	// Run initially
+	r.Model, err = models.New(r.DBUrl)
+	if err == nil {
+		log.Println("[INFO]: connection established with database")
+		return err
+	}
 
 	// Create task for running the agent
 	r.DBConnectJob, err = r.TaskScheduler.NewJob(
@@ -117,7 +124,7 @@ func (r *OCSPResponderService) startDBConnectJob() error {
 				if err != nil {
 					return
 				}
-				log.Println("[INFO] ... connection established with database")
+				log.Println("[INFO]: connection established with database")
 
 				if err := r.TaskScheduler.RemoveJob(r.DBConnectJob.ID()); err != nil {
 					return
@@ -129,6 +136,7 @@ func (r *OCSPResponderService) startDBConnectJob() error {
 		log.Fatalf("[FATAL]: could not start the DB connect job: %v", err)
 		return err
 	}
+
 	log.Printf("[INFO]: new DB connect job has been scheduled every %d minutes", 2)
 	return nil
 }

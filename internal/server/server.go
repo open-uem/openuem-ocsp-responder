@@ -3,6 +3,7 @@ package server
 import (
 	"crypto/rsa"
 	"crypto/x509"
+	"log"
 	"net/http"
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
@@ -35,6 +36,8 @@ func (w *WebServer) Serve() error {
 	return w.Server.ListenAndServe()
 }
 
-func (w *WebServer) Close() error {
-	return w.Server.Close()
+func (w *WebServer) Close() {
+	if err := w.Server.Close(); err != nil {
+		log.Println("[ERROR]: could not shutdown web server")
+	}
 }
