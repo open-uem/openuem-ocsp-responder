@@ -9,6 +9,7 @@ require (
 	github.com/go-co-op/gocron/v2 v2.12.1
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/labstack/echo/v4 v4.12.0
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/urfave/cli/v2 v2.27.4
 	golang.org/x/crypto v0.27.0
 	golang.org/x/sys v0.26.0
