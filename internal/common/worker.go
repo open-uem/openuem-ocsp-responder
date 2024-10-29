@@ -11,7 +11,6 @@ import (
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/doncicuto/openuem_utils"
 	"github.com/go-co-op/gocron/v2"
-	"golang.org/x/sys/windows/registry"
 )
 
 type Worker struct {
@@ -86,27 +85,10 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	k, err := openuem_utils.OpenRegistryForQuery(registry.LOCAL_MACHINE, `SOFTWARE\OpenUEM\Server`)
+	w.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
 	if err != nil {
-		log.Println("[ERROR]: could not open registry")
+		log.Printf("[ERROR]: %v", err)
 		return err
-	}
-	defer k.Close()
-
-	w.DatabaseType, err = openuem_utils.GetValueFromRegistry(k, "Database")
-	if err != nil {
-		log.Println("[ERROR]: could not read database type from registry")
-		return err
-	}
-
-	if w.DatabaseType == "SQLite" {
-		w.DBUrl = filepath.Join(cwd, "database", "openuem.db")
-	} else {
-		w.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
-		if err != nil {
-			log.Printf("[ERROR]: %v", err)
-			return err
-		}
 	}
 
 	caCertPath := filepath.Join(cwd, "certificates/ca/ca.cer")
