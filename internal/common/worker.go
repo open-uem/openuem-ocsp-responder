@@ -23,7 +23,6 @@ type Worker struct {
 	CACert         *x509.Certificate
 	OCSPCert       *x509.Certificate
 	OCSPPrivateKey *rsa.PrivateKey
-	DatabaseType   string
 }
 
 func NewWorker(logName string) *Worker {
