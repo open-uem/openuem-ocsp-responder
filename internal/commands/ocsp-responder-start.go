@@ -46,6 +46,12 @@ func OCSPResponderFlags() []cli.Flag {
 			EnvVars:  []string{"DATABASE_URL"},
 			Required: true,
 		},
+		&cli.StringFlag{
+			Name:    "port",
+			Usage:   "the port used by the OCSP Responder",
+			EnvVars: []string{"OCSP_PORT"},
+			Value:   "8000",
+		},
 	}
 }
 

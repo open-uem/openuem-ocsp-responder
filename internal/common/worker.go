@@ -3,6 +3,7 @@ package common
 import (
 	"crypto/rsa"
 	"crypto/x509"
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/doncicuto/openuem_utils"
 	"github.com/go-co-op/gocron/v2"
+	"golang.org/x/sys/windows/registry"
 )
 
 type Worker struct {
@@ -23,6 +25,7 @@ type Worker struct {
 	CACert         *x509.Certificate
 	OCSPCert       *x509.Certificate
 	OCSPPrivateKey *rsa.PrivateKey
+	Port           string
 }
 
 func NewWorker(logName string) *Worker {
@@ -53,7 +56,12 @@ func (w *Worker) StartWorker() {
 
 	// TODO may we set the port from registry key and avoid harcoding it?
 	log.Println("[INFO]: launching server")
-	w.WebServer = server.New(w.Model, ":8000", w.CACert, w.OCSPCert, w.OCSPPrivateKey)
+
+	port := ":8000"
+	if w.Port != "" {
+		port = fmt.Sprintf(":%s", w.Port)
+	}
+	w.WebServer = server.New(w.Model, port, w.CACert, w.OCSPCert, w.OCSPPrivateKey)
 
 	go func() {
 		if err := w.WebServer.Serve(); err != http.ErrServerClosed {
@@ -108,6 +116,19 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 	w.OCSPPrivateKey, err = openuem_utils.ReadPEMPrivateKey(ocspKeyPath)
 	if err != nil {
 		log.Println("[ERROR]: could not read OCSP private key")
+		return err
+	}
+
+	k, err := openuem_utils.OpenRegistryForQuery(registry.LOCAL_MACHINE, `SOFTWARE\OpenUEM\Server`)
+	if err != nil {
+		log.Println("[ERROR]: could not open registry")
+		return err
+	}
+	defer k.Close()
+
+	w.Port, err = openuem_utils.GetValueFromRegistry(k, "OCSPPort")
+	if err != nil {
+		log.Println("[ERROR]: could not read OCSP responders from registry")
 		return err
 	}
 

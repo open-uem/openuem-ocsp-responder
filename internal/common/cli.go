@@ -35,5 +35,7 @@ func (w *Worker) GenerateOCSPResponderConfigFromCLI(cCtx *cli.Context) error {
 		return err
 	}
 
+	w.Port = cCtx.String("port")
+
 	return nil
 }
