@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/doncicuto/openuem_utils"
 	"github.com/go-co-op/gocron/v2"
-	"golang.org/x/sys/windows/registry"
 )
 
 type Worker struct {
@@ -73,64 +71,23 @@ func (w *Worker) StartWorker() {
 }
 
 func (w *Worker) StopWorker() {
-	w.Model.Close()
-	w.Logger.Close()
-	if err := w.TaskScheduler.Shutdown(); err != nil {
-		log.Printf("[ERROR]: could not stop the task scheduler, reason: %s", err.Error())
-	}
-	w.WebServer.Close()
-}
-
-func (w *Worker) GenerateOCSPResponderConfig() error {
-	var err error
-
-	// Get new OCSP Responder
-
-	cwd, err := GetWd()
-	if err != nil {
-		log.Println("[ERROR]: could not get working directory")
-		return err
+	if w.Model != nil {
+		w.Model.Close()
 	}
 
-	w.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
-	if err != nil {
-		log.Printf("[ERROR]: %v", err)
-		return err
+	if w.TaskScheduler != nil {
+		if err := w.TaskScheduler.Shutdown(); err != nil {
+			log.Printf("[ERROR]: could not stop the task scheduler, reason: %s", err.Error())
+		}
 	}
 
-	caCertPath := filepath.Join(cwd, "certificates/ca/ca.cer")
-	w.CACert, err = openuem_utils.ReadPEMCertificate(caCertPath)
-	if err != nil {
-		log.Printf("[ERROR]: could not read CA certificate in %s", caCertPath)
-		return err
+	if w.WebServer != nil {
+		w.WebServer.Close()
 	}
 
-	ocspCertPath := filepath.Join(cwd, "certificates/ocsp/ocsp.cer")
-	w.OCSPCert, err = openuem_utils.ReadPEMCertificate(ocspCertPath)
-	if err != nil {
-		log.Println("[ERROR]: could not read OCSP certificate")
-		return err
+	log.Println("[INFO]: the OCSP responder has stopped")
+	if w.Logger != nil {
+		w.Logger.Close()
 	}
 
-	ocspKeyPath := filepath.Join(cwd, "certificates/ocsp/ocsp.key")
-	w.OCSPPrivateKey, err = openuem_utils.ReadPEMPrivateKey(ocspKeyPath)
-	if err != nil {
-		log.Println("[ERROR]: could not read OCSP private key")
-		return err
-	}
-
-	k, err := openuem_utils.OpenRegistryForQuery(registry.LOCAL_MACHINE, `SOFTWARE\OpenUEM\Server`)
-	if err != nil {
-		log.Println("[ERROR]: could not open registry")
-		return err
-	}
-	defer k.Close()
-
-	w.Port, err = openuem_utils.GetValueFromRegistry(k, "OCSPPort")
-	if err != nil {
-		log.Println("[ERROR]: could not read OCSP responders from registry")
-		return err
-	}
-
-	return nil
 }
