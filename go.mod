@@ -12,6 +12,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.4
 	golang.org/x/crypto v0.27.0
 	golang.org/x/sys v0.26.0
+	gopkg.in/ini.v1 v1.67.0
 )
 
 require (
@@ -21,7 +22,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/danieljoos/wincred v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
@@ -45,8 +45,6 @@ require (
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
-	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
 replace github.com/doncicuto/openuem_ent => ./internal/ent
