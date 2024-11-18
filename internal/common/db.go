@@ -1,10 +1,13 @@
 package common
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
+	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/go-co-op/gocron/v2"
 )
 
@@ -14,6 +17,8 @@ func (w *Worker) StartDBConnectJob() error {
 	w.Model, err = models.New(w.DBUrl)
 	if err == nil {
 		log.Println("[INFO]: connection established with database")
+
+		w.StartOCSPResponderWebService()
 		return nil
 	}
 	log.Printf("[ERROR]: could not connect with database %v", err)
@@ -35,6 +40,8 @@ func (w *Worker) StartDBConnectJob() error {
 				if err := w.TaskScheduler.RemoveJob(w.DBConnectJob.ID()); err != nil {
 					return
 				}
+
+				w.StartOCSPResponderWebService()
 			},
 		),
 	)
@@ -44,4 +51,22 @@ func (w *Worker) StartDBConnectJob() error {
 	}
 	log.Printf("[INFO]: new DB connect job has been scheduled every %d minutes", 2)
 	return nil
+}
+
+func (w *Worker) StartOCSPResponderWebService() {
+	log.Println("[INFO]: launching server")
+
+	port := ":8000"
+	if w.Port != "" {
+		port = fmt.Sprintf(":%s", w.Port)
+	}
+	w.WebServer = server.New(w.Model, port, w.CACert, w.OCSPCert, w.OCSPPrivateKey)
+
+	go func() {
+		if err := w.WebServer.Serve(); err != http.ErrServerClosed {
+			log.Printf("[ERROR]: the server has stopped, reason: %v", err.Error())
+		}
+	}()
+
+	log.Println("[INFO]: OCSP responder is running")
 }

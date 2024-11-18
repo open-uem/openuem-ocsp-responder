@@ -9,7 +9,6 @@ import (
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server/handler"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type WebServer struct {
@@ -32,7 +31,7 @@ func (w *WebServer) Serve() error {
 		Addr:    w.Address,
 		Handler: e,
 	}
-	e.Use(middleware.Logger()) // -> TODO set an env variable for debug
+	// e.Use(middleware.Logger()) // -> TODO set an env variable for debug
 	return w.Server.ListenAndServe()
 }
 

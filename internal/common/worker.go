@@ -3,9 +3,7 @@ package common
 import (
 	"crypto/rsa"
 	"crypto/x509"
-	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
@@ -52,22 +50,6 @@ func (w *Worker) StartWorker() {
 		return
 	}
 
-	// TODO may we set the port from registry key and avoid harcoding it?
-	log.Println("[INFO]: launching server")
-
-	port := ":8000"
-	if w.Port != "" {
-		port = fmt.Sprintf(":%s", w.Port)
-	}
-	w.WebServer = server.New(w.Model, port, w.CACert, w.OCSPCert, w.OCSPPrivateKey)
-
-	go func() {
-		if err := w.WebServer.Serve(); err != http.ErrServerClosed {
-			log.Printf("[ERROR]: the server has stopped, reason: %v", err.Error())
-		}
-	}()
-
-	log.Println("[INFO]: OCSP responder is running")
 }
 
 func (w *Worker) StopWorker() {
