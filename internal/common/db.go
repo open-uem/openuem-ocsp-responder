@@ -18,6 +18,11 @@ func (w *Worker) StartDBConnectJob() error {
 	if err == nil {
 		log.Println("[INFO]: connection established with database")
 
+		// Save component version
+		if err := w.Model.SetComponent(w.Component, w.Version, w.Channel); err != nil {
+			log.Fatalf("[ERROR]: could not save component information")
+		}
+
 		w.StartOCSPResponderWebService()
 		return nil
 	}
@@ -37,6 +42,10 @@ func (w *Worker) StartDBConnectJob() error {
 				}
 				log.Println("[INFO]: connection established with database")
 
+				// Save component version
+				if err := w.Model.SetComponent(w.Component, w.Version, w.Channel); err != nil {
+					log.Fatalf("[ERROR]: could not save component information")
+				}
 				if err := w.TaskScheduler.RemoveJob(w.DBConnectJob.ID()); err != nil {
 					return
 				}
