@@ -1,5 +1,3 @@
-//go:build linux
-
 package common
 
 import (
@@ -12,8 +10,10 @@ import (
 func (w *Worker) GenerateOCSPResponderConfig() error {
 	var err error
 
-	// Get new OCSP Responder
+	// Get config file location
+	configFile := openuem_utils.GetConfigFile()
 
+	// Get new OCSP Responder
 	w.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
 	if err != nil {
 		log.Printf("[ERROR]: %v", err)
@@ -21,12 +21,12 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 	}
 
 	// Open ini file
-	cfg, err := ini.Load("/etc/openuem-server/openuem.ini")
+	cfg, err := ini.Load(configFile)
 	if err != nil {
 		return err
 	}
 
-	key, err := cfg.Section("Server").GetKey("ca_cert_path")
+	key, err := cfg.Section("OCSP").GetKey("CACert")
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err = cfg.Section("Server").GetKey("ocsp_cert_path")
+	key, err = cfg.Section("OCSP").GetKey("OCSPCert")
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err = cfg.Section("Server").GetKey("ocsp_key_path")
+	key, err = cfg.Section("OCSP").GetKey("OCSPKey")
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err = cfg.Section("Server").GetKey("ocsp_port")
+	key, err = cfg.Section("OCSP").GetKey("OCSPPort")
 	if err != nil {
 		return err
 	}
