@@ -26,7 +26,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err := cfg.Section("OCSP").GetKey("CACert")
+	key, err := cfg.Section("Certificates").GetKey("CACert")
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err = cfg.Section("OCSP").GetKey("OCSPCert")
+	key, err = cfg.Section("Certificates").GetKey("OCSPCert")
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	key, err = cfg.Section("OCSP").GetKey("OCSPKey")
+	key, err = cfg.Section("Certificates").GetKey("OCSPKey")
 	if err != nil {
 		return err
 	}

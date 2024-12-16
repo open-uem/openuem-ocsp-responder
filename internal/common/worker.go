@@ -7,7 +7,6 @@ import (
 
 	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
 	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
-	"github.com/doncicuto/openuem_ent/component"
 	"github.com/doncicuto/openuem_utils"
 	"github.com/go-co-op/gocron/v2"
 )
@@ -23,9 +22,6 @@ type Worker struct {
 	OCSPCert       *x509.Certificate
 	OCSPPrivateKey *rsa.PrivateKey
 	Port           string
-	Component      component.Component
-	Version        string
-	Channel        component.Channel
 }
 
 func NewWorker(logName string) *Worker {
@@ -34,9 +30,6 @@ func NewWorker(logName string) *Worker {
 		worker.Logger = openuem_utils.NewLogger(logName)
 	}
 
-	worker.Version = VERSION
-	worker.Component = component.ComponentOcsp
-	worker.Channel = CHANNEL
 	return &worker
 }
 
