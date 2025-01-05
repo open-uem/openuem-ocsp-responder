@@ -1,6 +1,0 @@
-[submodule "internal/ent"]
-	path = internal/ent
-	url = https://github.com/open-uem/openuem-ent.git
-[submodule "internal/utils"]
-	path = internal/utils
-	url = https://github.com/open-uem/openuem-utils.git
