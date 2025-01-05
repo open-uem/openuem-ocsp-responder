@@ -5,8 +5,8 @@ package main
 import (
 	"log"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/common"
-	"github.com/doncicuto/openuem_utils"
+	"github.com/open-uem/openuem-ocsp-responder/internal/common"
+	"github.com/open-uem/utils"
 	"golang.org/x/sys/windows/svc"
 )
 
@@ -16,7 +16,7 @@ func main() {
 		log.Printf("[ERROR]: could not generate config for OCSP responder: %v", err)
 	}
 
-	s := openuem_utils.NewOpenUEMWindowsService()
+	s := utils.NewOpenUEMWindowsService()
 	s.ServiceStart = w.StartWorker
 	s.ServiceStop = w.StopWorker
 

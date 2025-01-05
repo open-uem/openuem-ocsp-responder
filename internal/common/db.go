@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
-	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
 	"github.com/go-co-op/gocron/v2"
+	"github.com/open-uem/openuem-ocsp-responder/internal/models"
+	"github.com/open-uem/openuem-ocsp-responder/internal/server"
 )
 
 func (w *Worker) StartDBConnectJob() error {

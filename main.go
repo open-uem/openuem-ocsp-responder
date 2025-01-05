@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/commands"
+	"github.com/open-uem/openuem-ocsp-responder/internal/commands"
 	"github.com/urfave/cli/v2"
 )
 

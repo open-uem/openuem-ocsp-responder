@@ -3,8 +3,8 @@ package models
 import (
 	"context"
 
-	"github.com/doncicuto/openuem_ent"
-	"github.com/doncicuto/openuem_ent/revocation"
+	openuem_ent "github.com/open-uem/ent"
+	"github.com/open-uem/ent/revocation"
 )
 
 func (m *Model) GetRevoked(serial int64) (*openuem_ent.Revocation, error) {

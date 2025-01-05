@@ -4,7 +4,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
+	"github.com/open-uem/openuem-ocsp-responder/internal/models"
 )
 
 type Handler struct {

@@ -3,7 +3,7 @@ package common
 import (
 	"path/filepath"
 
-	"github.com/doncicuto/openuem_utils"
+	"github.com/open-uem/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,19 +18,19 @@ func (w *Worker) GenerateOCSPResponderConfigFromCLI(cCtx *cli.Context) error {
 	}
 
 	caCertPath := filepath.Join(cwd, cCtx.String("cacert"))
-	w.CACert, err = openuem_utils.ReadPEMCertificate(caCertPath)
+	w.CACert, err = utils.ReadPEMCertificate(caCertPath)
 	if err != nil {
 		return err
 	}
 
 	ocspCertPath := filepath.Join(cwd, cCtx.String("cert"))
-	w.OCSPCert, err = openuem_utils.ReadPEMCertificate(ocspCertPath)
+	w.OCSPCert, err = utils.ReadPEMCertificate(ocspCertPath)
 	if err != nil {
 		return err
 	}
 
 	ocspKeyPath := filepath.Join(cwd, cCtx.String("key"))
-	w.OCSPPrivateKey, err = openuem_utils.ReadPEMPrivateKey(ocspKeyPath)
+	w.OCSPPrivateKey, err = utils.ReadPEMPrivateKey(ocspKeyPath)
 	if err != nil {
 		return err
 	}

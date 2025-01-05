@@ -1,14 +1,14 @@
-module github.com/doncicuto/openuem-ocsp-responder
+module github.com/open-uem/openuem-ocsp-responder
 
-go 1.23.1
+go 1.23.4
 
 require (
 	entgo.io/ent v0.14.1
-	github.com/doncicuto/openuem_ent v0.0.0-00010101000000-000000000000
-	github.com/doncicuto/openuem_utils v0.0.0-00010101000000-000000000000
 	github.com/go-co-op/gocron/v2 v2.12.1
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/labstack/echo/v4 v4.12.0
+	github.com/open-uem/ent v0.0.0-20250105121453-5b3092896406
+	github.com/open-uem/utils v0.0.0-20250105115248-b0599a18d2b5
 	github.com/urfave/cli/v2 v2.27.4
 	golang.org/x/crypto v0.27.0
 	golang.org/x/sys v0.26.0
@@ -46,7 +46,3 @@ require (
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
 )
-
-replace github.com/doncicuto/openuem_ent => ./internal/ent
-
-replace github.com/doncicuto/openuem_utils => ./internal/utils

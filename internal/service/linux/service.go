@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/common"
+	"github.com/open-uem/openuem-ocsp-responder/internal/common"
 )
 
 func main() {

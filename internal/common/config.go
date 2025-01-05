@@ -3,7 +3,7 @@ package common
 import (
 	"log"
 
-	"github.com/doncicuto/openuem_utils"
+	"github.com/open-uem/utils"
 	"gopkg.in/ini.v1"
 )
 
@@ -11,10 +11,10 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 	var err error
 
 	// Get config file location
-	configFile := openuem_utils.GetConfigFile()
+	configFile := utils.GetConfigFile()
 
 	// Get new OCSP Responder
-	w.DBUrl, err = openuem_utils.CreatePostgresDatabaseURL()
+	w.DBUrl, err = utils.CreatePostgresDatabaseURL()
 	if err != nil {
 		log.Printf("[ERROR]: %v", err)
 		return err
@@ -31,7 +31,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	w.CACert, err = openuem_utils.ReadPEMCertificate(key.String())
+	w.CACert, err = utils.ReadPEMCertificate(key.String())
 	if err != nil {
 		log.Printf("[ERROR]: could not read CA certificate in %s", key.String())
 		return err
@@ -42,7 +42,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	w.OCSPCert, err = openuem_utils.ReadPEMCertificate(key.String())
+	w.OCSPCert, err = utils.ReadPEMCertificate(key.String())
 	if err != nil {
 		log.Println("[ERROR]: could not read OCSP certificate")
 		return err
@@ -53,7 +53,7 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 		return err
 	}
 
-	w.OCSPPrivateKey, err = openuem_utils.ReadPEMPrivateKey(key.String())
+	w.OCSPPrivateKey, err = utils.ReadPEMPrivateKey(key.String())
 	if err != nil {
 		log.Println("[ERROR]: could not read OCSP private key")
 		return err

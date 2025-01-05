@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
-	"github.com/doncicuto/openuem-ocsp-responder/internal/server/handler"
 	"github.com/labstack/echo/v4"
+	"github.com/open-uem/openuem-ocsp-responder/internal/models"
+	"github.com/open-uem/openuem-ocsp-responder/internal/server/handler"
 )
 
 type WebServer struct {

@@ -62,6 +62,10 @@ github.com/mattn/go-sqlite3 v1.14.16 h1:yOQRA0RpS5PFz/oikGwBEqvAWhWg5ufRz4ETLjwp
 github.com/mattn/go-sqlite3 v1.14.16/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S2DGjv9HUNg=
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 h1:DpOJ2HYzCv8LZP15IdmG+YdwD2luVPHITV96TkirNBM=
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7/go.mod h1:ZXFpozHsX6DPmq2I0TCekCxypsnAUbP2oI0UX1GXzOo=
+github.com/open-uem/ent v0.0.0-20250105121453-5b3092896406 h1:2T8yV+WHghZZS7lvAZO/+siCTq21Tdv32uQNgwn0fi8=
+github.com/open-uem/ent v0.0.0-20250105121453-5b3092896406/go.mod h1:e8mHL9J0EYdHiv9HqvIWRrJdWGlEdirm5LA4qWop2zQ=
+github.com/open-uem/utils v0.0.0-20250105115248-b0599a18d2b5 h1:EsMEGiRRtb0vJCdpczs8YkJIOvUpyxxI1P49AzBn9g4=
+github.com/open-uem/utils v0.0.0-20250105115248-b0599a18d2b5/go.mod h1:R2LdbpDQixQPMa4a6yuZsYFPANQzXU8EPzQD7/1iQXk=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/robfig/cron/v3 v3.0.1 h1:WdRxkvbJztn8LMz/QEvLN5sBU+xKpSqwwUO1Pjr4qDs=

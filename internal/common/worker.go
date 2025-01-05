@@ -5,16 +5,16 @@ import (
 	"crypto/x509"
 	"log"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/models"
-	"github.com/doncicuto/openuem-ocsp-responder/internal/server"
-	"github.com/doncicuto/openuem_utils"
 	"github.com/go-co-op/gocron/v2"
+	"github.com/open-uem/openuem-ocsp-responder/internal/models"
+	"github.com/open-uem/openuem-ocsp-responder/internal/server"
+	"github.com/open-uem/utils"
 )
 
 type Worker struct {
 	Model          *models.Model
 	WebServer      *server.WebServer
-	Logger         *openuem_utils.OpenUEMLogger
+	Logger         *utils.OpenUEMLogger
 	DBConnectJob   gocron.Job
 	TaskScheduler  gocron.Scheduler
 	DBUrl          string
@@ -27,7 +27,7 @@ type Worker struct {
 func NewWorker(logName string) *Worker {
 	worker := Worker{}
 	if logName != "" {
-		worker.Logger = openuem_utils.NewLogger(logName)
+		worker.Logger = utils.NewLogger(logName)
 	}
 
 	return &worker

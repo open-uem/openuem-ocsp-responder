@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/doncicuto/openuem_ent"
 	"github.com/labstack/echo/v4"
+	"github.com/open-uem/ent"
 	"golang.org/x/crypto/ocsp"
 )
 
@@ -87,7 +87,7 @@ func (h *Handler) createResponseTemplate(req *ocsp.Request) ocsp.Response {
 
 	// check if certificate has been revoked querying the database
 	revoked, err := h.Model.GetRevoked(serial.Int64())
-	if err != nil && !openuem_ent.IsNotFound(err) {
+	if err != nil && !ent.IsNotFound(err) {
 		log.Println("... could not check if certificate has been revoked")
 		responseTemplate.Status = ocsp.Unknown
 	} else {

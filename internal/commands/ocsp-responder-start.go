@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/doncicuto/openuem-ocsp-responder/internal/common"
+	"github.com/open-uem/openuem-ocsp-responder/internal/common"
 	"github.com/urfave/cli/v2"
 )
 
