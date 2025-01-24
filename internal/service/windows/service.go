@@ -26,10 +26,9 @@ func main() {
 
 	if err := w.GenerateOCSPResponderConfig(); err != nil {
 		log.Printf("[ERROR]: could not generate config for OCSP responder: %v", err)
-	}
-
-	if err := w.StartGenerateOCSPResponderConfigJob(); err != nil {
-		log.Fatalf("[FATAL]: could not start job to generate config for OCSP responder: %v", err)
+		if err := w.StartGenerateOCSPResponderConfigJob(); err != nil {
+			log.Fatalf("[FATAL]: could not start job to generate config for OCSP responder: %v", err)
+		}
 	}
 
 	s := utils.NewOpenUEMWindowsService()
