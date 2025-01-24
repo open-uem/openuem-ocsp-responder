@@ -16,6 +16,7 @@ type Worker struct {
 	WebServer      *server.WebServer
 	Logger         *utils.OpenUEMLogger
 	DBConnectJob   gocron.Job
+	ConfigJob      gocron.Job
 	TaskScheduler  gocron.Scheduler
 	DBUrl          string
 	CACert         *x509.Certificate
@@ -34,23 +35,11 @@ func NewWorker(logName string) *Worker {
 }
 
 func (w *Worker) StartWorker() {
-	var err error
-
-	// Start Task Scheduler
-	w.TaskScheduler, err = gocron.NewScheduler()
-	if err != nil {
-		log.Printf("[ERROR]: could not create task scheduler, reason: %s", err.Error())
-		return
-	}
-	w.TaskScheduler.Start()
-	log.Println("[INFO]: task scheduler has been started")
-
 	// Start a job to try to connect with the database
 	if err := w.StartDBConnectJob(); err != nil {
 		log.Printf("[ERROR]: could not start DB connect job, reason: %s", err.Error())
 		return
 	}
-
 }
 
 func (w *Worker) StopWorker() {

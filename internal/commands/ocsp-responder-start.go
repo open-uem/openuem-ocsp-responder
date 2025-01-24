@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"syscall"
 
+	"github.com/go-co-op/gocron/v2"
 	"github.com/open-uem/openuem-ocsp-responder/internal/common"
 	"github.com/urfave/cli/v2"
 )
@@ -56,6 +57,8 @@ func OCSPResponderFlags() []cli.Flag {
 }
 
 func startOCSPResponder(cCtx *cli.Context) error {
+	var err error
+
 	worker := common.NewWorker("")
 
 	if err := worker.GenerateOCSPResponderConfigFromCLI(cCtx); err != nil {
@@ -67,6 +70,16 @@ func startOCSPResponder(cCtx *cli.Context) error {
 		return err
 	}
 
+	// Start Task Scheduler
+	worker.TaskScheduler, err = gocron.NewScheduler()
+	if err != nil {
+		log.Printf("[ERROR]: could not create task scheduler, reason: %s", err.Error())
+		return err
+	}
+	worker.TaskScheduler.Start()
+	log.Println("[INFO]: task scheduler has been started")
+
+	// Start worker
 	worker.StartWorker()
 
 	// Keep the connection alive

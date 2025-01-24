@@ -2,7 +2,9 @@ package common
 
 import (
 	"log"
+	"time"
 
+	"github.com/go-co-op/gocron/v2"
 	"github.com/open-uem/utils"
 	"gopkg.in/ini.v1"
 )
@@ -66,5 +68,37 @@ func (w *Worker) GenerateOCSPResponderConfig() error {
 
 	w.Port = key.String()
 
+	return nil
+}
+
+func (w *Worker) StartGenerateOCSPResponderConfigJob() error {
+	var err error
+
+	// Create task for getting the worker config
+	w.ConfigJob, err = w.TaskScheduler.NewJob(
+		gocron.DurationJob(
+			time.Duration(time.Duration(1*time.Minute)),
+		),
+		gocron.NewTask(
+			func() {
+				err = w.GenerateOCSPResponderConfig()
+				if err != nil {
+					log.Printf("[ERROR]: could not generate config for OCSP responder, reason: %v", err)
+					return
+				}
+
+				log.Println("[INFO]: responder's config has been successfully generated")
+				if err := w.TaskScheduler.RemoveJob(w.ConfigJob.ID()); err != nil {
+					return
+				}
+				return
+			},
+		),
+	)
+	if err != nil {
+		log.Fatalf("[FATAL]: could not start the generate OCSP responder config job: %v", err)
+		return err
+	}
+	log.Printf("[INFO]: new generate OCSP responder config job has been scheduled every %d minute", 1)
 	return nil
 }
