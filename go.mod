@@ -7,16 +7,16 @@ require (
 	github.com/go-co-op/gocron/v2 v2.14.1
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/open-uem/ent v0.0.0-20250105121453-5b3092896406
-	github.com/open-uem/utils v0.0.0-20250105115248-b0599a18d2b5
+	github.com/open-uem/ent v0.0.0-20250214102310-33a8a847d229
+	github.com/open-uem/utils v0.0.0-20250214102216-df5a38667d0a
 	github.com/urfave/cli/v2 v2.27.5
-	golang.org/x/crypto v0.31.0
-	golang.org/x/sys v0.29.0
+	golang.org/x/crypto v0.33.0
+	golang.org/x/sys v0.30.0
 	gopkg.in/ini.v1 v1.67.0
 )
 
 require (
-	ariga.io/atlas v0.29.1 // indirect
+	ariga.io/atlas v0.31.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
@@ -39,11 +39,12 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
-	github.com/zclconf/go-cty v1.16.0 // indirect
+	github.com/zclconf/go-cty v1.16.2 // indirect
+	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329 // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
-	golang.org/x/tools v0.28.0 // indirect
+	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
 )
