@@ -1,13 +1,13 @@
 module github.com/open-uem/openuem-ocsp-responder
 
-go 1.23.6
+go 1.24.1
 
 require (
-	entgo.io/ent v0.14.1
+	entgo.io/ent v0.14.3
 	github.com/go-co-op/gocron/v2 v2.14.1
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/open-uem/ent v0.0.0-20250225084914-d46c51bc6f85
+	github.com/open-uem/ent v0.0.0-20250319090736-f3e013b53cca
 	github.com/open-uem/utils v0.0.0-20250214102216-df5a38667d0a
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/crypto v0.33.0
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.31.0 // indirect
+	ariga.io/atlas v0.31.1-0.20250212144724-069be8033e83 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
