@@ -59,6 +59,8 @@ github.com/open-uem/ent v0.0.0-20250422104317-37876cf69cea h1:lDyAv0HeJGpyFw8aE7
 github.com/open-uem/ent v0.0.0-20250422104317-37876cf69cea/go.mod h1:H6UG/O3OGooQFnwx8QXCKYfMh0eYWClAL3+D3qs3OQk=
 github.com/open-uem/ent v0.0.0-20250424154135-51cb9044486a h1:9tk/+7lMIjET9B72/XrKX3CaKyTMZRR4BVSjLOP7ocE=
 github.com/open-uem/ent v0.0.0-20250424154135-51cb9044486a/go.mod h1:TkCPQ+cFFwCdDflqc2/XKTZIN/ZJGJenbvUSIZOEzsk=
+github.com/open-uem/ent v0.0.0-20250513061100-3deef4bb3081 h1:EQuQibKeVpfWKrjgqeJ/UyBL9m8sH5uIXWKu53TgyU4=
+github.com/open-uem/ent v0.0.0-20250513061100-3deef4bb3081/go.mod h1:TkCPQ+cFFwCdDflqc2/XKTZIN/ZJGJenbvUSIZOEzsk=
 github.com/open-uem/utils v0.0.0-20250407085447-f3730b9ef3ac h1:lHsz8lPnZFkXguSSFhzKVQct2Y/DEbhBxIAOy+5qYOA=
 github.com/open-uem/utils v0.0.0-20250407085447-f3730b9ef3ac/go.mod h1:nPL4xlsiCPyUiF8ntnyrlyz+pVjizIC+N5+TOvj3TLc=
 github.com/open-uem/utils v0.0.0-20250424154005-aa7e1df31e6c h1:oEybWeWWzelM7WU7LF+wqWF4fj8pXGjQ1RQ/bCVi6vg=
