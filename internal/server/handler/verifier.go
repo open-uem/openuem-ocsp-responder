@@ -32,10 +32,17 @@ func (h *Handler) Verify(c echo.Context) error {
 
 	if c.Request().Method == "POST" {
 		requestBody, err = io.ReadAll(c.Request().Body)
+		if err != nil {
+			return sendOCSPError(c, http.StatusBadRequest, malformedRequest)
+		}
 	}
 
 	if c.Request().Method == "GET" {
 		uri := c.Request().URL.Path
+		if strings.Contains(uri, "health") {
+			return healthCheck(c, h)
+		}
+
 		requestBody, err = base64.StdEncoding.DecodeString(strings.TrimPrefix(uri, "/"))
 		if err != nil {
 			return sendOCSPError(c, http.StatusBadRequest, malformedRequest)
@@ -115,6 +122,17 @@ func sendOCSPResponse(c echo.Context, responseTemplate ocsp.Response, response [
 	return nil
 }
 
+func healthCheck(c echo.Context, h *Handler) error {
+	if _, err := h.Model.GetRevoked(0); err != nil {
+		if ent.IsNotFound(err) {
+			return c.String(http.StatusOK, "OCSP Responder is healthy")
+		} else {
+			return c.String(http.StatusInternalServerError, "OCSP Responder is not healthy")
+		}
+	}
+	return c.String(http.StatusOK, "OCSP Responder is healthy")
+}
+
 /* MIT License
 
 Copyright (c) 2016 SMFS Inc. DBA GRIMM https://grimm-co.com
@@ -140,7 +158,7 @@ SOFTWARE. */
 func verifyIssuer(caCert *x509.Certificate, req *ocsp.Request) error {
 	h := req.HashAlgorithm.New()
 	h.Write(caCert.RawSubject)
-	if bytes.Compare(h.Sum(nil), req.IssuerNameHash) != 0 {
+	if !bytes.Equal(h.Sum(nil), req.IssuerNameHash) {
 		log.Println("[INFO]: issuer name does not match")
 		return errors.New("issuer name does not match")
 	}
@@ -154,7 +172,7 @@ func verifyIssuer(caCert *x509.Certificate, req *ocsp.Request) error {
 		return err
 	}
 	h.Write(publicKeyInfo.PublicKey.RightAlign())
-	if bytes.Compare(h.Sum(nil), req.IssuerKeyHash) != 0 {
+	if !bytes.Equal(h.Sum(nil), req.IssuerKeyHash) {
 		log.Println("[INFO]: issuer key hash does not match")
 		return errors.New("issuer key hash does not match")
 	}
